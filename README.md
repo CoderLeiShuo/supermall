@@ -1,5 +1,8 @@
 # supermall
 
+## 效果图
+![](https://raw.githubusercontent.com/CoderLeiShuo/cloudimgs/master/imgs/20200213121152.png)
+
 ## Project setup
 ```
 npm install
