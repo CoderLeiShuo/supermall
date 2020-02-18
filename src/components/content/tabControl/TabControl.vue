@@ -31,6 +31,7 @@ export default {
   methods: {
     itemClick(index) {
       this.currentIndex = index;
+      // 向home组件发送自定义事件
       this.$emit("tabClick", index);
     }
   }

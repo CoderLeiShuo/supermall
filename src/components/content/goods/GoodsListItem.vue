@@ -1,6 +1,8 @@
 <template>
   <div class="goods-item" @click="itemClick">
-    <img :src="goodsItem.show.img" alt="LeiShuo" @load="imageLoad" />
+    <!-- <img :src="goodsItem.show.img" alt="LeiShuo" @load="imageLoad" /> -->
+    <img :src="showImage" alt="LeiShuo" @load="imageLoad" />
+    <!-- <img v-lazy="showImage" alt="LeiShuo" @load="imageLoad" /> -->
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <!-- <span class="price">{{goodsItem.price}}</span> -->
@@ -24,6 +26,12 @@ export default {
   computed: {
     price() {
       return "￥" + this.goodsItem.price;
+    },
+    // 判断image的获取位置
+    showImage() {
+      return (
+        this.goodsItem.img || this.goodsItem.image || this.goodsItem.show.img
+      );
     }
   },
   methods: {

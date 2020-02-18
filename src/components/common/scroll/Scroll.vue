@@ -31,7 +31,9 @@ export default {
     this.scroll = new BSscroll(this.$refs.wrapper, {
       click: true,
       probeType: this.probeType,
-      pullUpLoad: this.pullUpLoad
+      pullUpLoad: this.pullUpLoad,
+      // 
+      // preventDefault: false
     });
     // 2. 监听滚动的位置
     if (this.probeType === 2 || this.probeType === 3) {

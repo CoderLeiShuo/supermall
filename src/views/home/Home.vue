@@ -3,6 +3,7 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
+    <!-- 用于显示导航栏 -->
     <tab-control
       class="tab-control"
       :titles="['流行','新款','精选']"
@@ -34,13 +35,14 @@ import RecommendView from "./childComps/RecommendView";
 import FeatureView from "./childComps/FeatureView";
 
 import NavBar from "components/common/navbar/NavBar";
+import Scroll from "components/common/scroll/Scroll";
 import TabControl from "components/content/tabControl/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
-import Scroll from "components/common/scroll/Scroll";
 import BackTop from "components/content/backTop/BackTop";
 
 import { getHomeMultidata, getHomeGoods } from "network/home";
 import { debounce } from "common/utils";
+import { itemListenerMixin } from "common/mixin";
 
 export default {
   name: "Home",
@@ -49,9 +51,9 @@ export default {
     RecommendView,
     FeatureView,
     NavBar,
+    Scroll,
     TabControl,
     GoodsList,
-    Scroll,
     BackTop
   },
   data() {
@@ -68,7 +70,8 @@ export default {
       isShowBackTop: false,
       tabOffsetTop: 0,
       isTabFixed: false,
-      saveY: 0
+      saveY: 0,
+      // itemImgListener: null
     };
   },
   computed: {
@@ -78,6 +81,7 @@ export default {
   },
   created() {
     //   1.请求多个数据
+    // 将这些代码封装为方法，直接在created中调用
     // getHomeMultidata().then(res => {
     //   // 注意此处的this为该组件
     //   // this.results = res;
@@ -95,27 +99,37 @@ export default {
     this.getHomeGoods("sell");
   },
   mounted() {
+    //  console.log("使用了混入技术对首页监听代码重构");
     // 3.监听item中图片加载完成
     // const refresh = this.debounce(this.$refs.scroll.refresh);
-    const refresh = debounce(this.$refs.scroll.refresh);
-    this.$bus.$on("itemImageLoad", () => {
-      // this.$refs.scroll.refresh();
-      refresh();
-    });
-  },
-  beforeDestroy() {
-    // 加上该代码时，切换路由不报错
-    this.$bus.$off();
+    // 进行防抖操作
+    // let refresh = debounce(this.$refs.scroll.refresh);
+
+    // // this.$bus.$on("itemImageLoad", () => {
+    // //   // this.$refs.scroll.refresh();
+    // //   refresh();
+    // // });
+
+    // // 对监听的事件进行保存
+    // this.itemImgListener = () => {
+    //   refresh();
+    // };
+    // // 通过事件总线监听事件，触发相应函数
+    // this.$bus.$on("itemImageLoad", this.itemImgListener);
   },
   activated() {
-    this.$refs.scroll.scrollTo(0, this.saveY, 0);
     // 解决在上拉加载后，切换路由会跳转到顶部的bug
-    // this.$refs.scroll.refresh();
+    // 要先进行刷新
+    this.$refs.scroll.refresh();
+    this.$refs.scroll.scrollTo(0, this.saveY, 0);
   },
   deactivated() {
-    // 保存滚动的值
-
+    // 保存滚动的值，用于切换路由时，回到原来滚动位置
     this.saveY = this.$refs.scroll.getScrollY();
+    // 取消全局事件的监听，用于解决详情页使用组件复用时，图片加载完向外发送事件，首页也会刷新的问题
+    // 参数一：要取消的事件名
+    // 参数二：要取消的函数
+    this.$bus.$off("itemImgLoad",this.itemImgListener);
   },
   methods: {
     /**
@@ -152,8 +166,10 @@ export default {
     },
     loadmore() {
       this.getHomeGoods(this.currentType);
+      this.$refs.scroll.refresh();
     },
     swiperImageLoad() {
+      // $el:Vue 实例使用的根 DOM 元素
       this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
     },
 
@@ -174,7 +190,7 @@ export default {
       getHomeGoods(type, page).then(res => {
         this.goods[type].list.push(...res.data.list);
         this.goods[type].page += 1;
-
+        // 上拉加载完成后，需要调用该方法结束本次上拉
         this.$refs.scroll.finishPullUp();
       });
     }
