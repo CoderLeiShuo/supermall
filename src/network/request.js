@@ -5,7 +5,6 @@ export function request(config) {
   const instance = axios.create({
     // baseURL: 'http://123.207.32.32:8000/api/hy',
     baseURL:'http://106.54.54.237:8000/api/hy',
-
     timeout: 2000
   })
 
@@ -14,7 +13,7 @@ export function request(config) {
   instance.interceptors.request.use(config => {
     return config
   }, err => {
-    // console.log(err);
+    console.log(err);
   })
 
   // 2.2.响应拦截

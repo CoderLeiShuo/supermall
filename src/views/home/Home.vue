@@ -17,7 +17,9 @@
       :probe-type="3"
       @scroll="contentScroll"
       :pull-up-load="true"
+      :pullDownRefresh="true"
       @pullingUp="loadmore"
+      @pullingDown="onPullingDown"
     >
       <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
@@ -168,11 +170,14 @@ export default {
       this.getHomeGoods(this.currentType);
       this.$refs.scroll.refresh();
     },
+    onPullingDown(){
+    location.reload();
+    this.$refs.scroll.finishPullDown();
+    },
     swiperImageLoad() {
       // $el:Vue 实例使用的根 DOM 元素
       this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
     },
-
     /**
      * 网络请求相关的方法
      */
@@ -216,6 +221,7 @@ export default {
   top: 0px;
   z-index: 9; */
 }
+
 
 .tab-control {
   /* stick必须与top结合使用 */

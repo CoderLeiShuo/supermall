@@ -33,7 +33,9 @@ export const backTopMixin = {
     },
     // 判断isShowBackTop的布尔值
     listenShowBackTop(position) {
-      this.isShowBackTop = -position.y > 0;
+      const positionY = -position.y;
+      this.isShowBackTop = positionY > 0;
+      return positionY;
     }
   }
 }

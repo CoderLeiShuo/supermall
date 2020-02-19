@@ -19,6 +19,11 @@ export default {
     pullUpLoad: {
       type: Boolean,
       default: false
+    },
+    pullDownRefresh: {
+      type: Boolean,
+      default: false,
+      // stop: 20
     }
   },
   data() {
@@ -32,7 +37,8 @@ export default {
       click: true,
       probeType: this.probeType,
       pullUpLoad: this.pullUpLoad,
-      // 
+      pullDownRefresh: this.pullDownRefresh
+      //
       // preventDefault: false
     });
     // 2. 监听滚动的位置
@@ -48,6 +54,12 @@ export default {
         this.$emit("pullingUp");
       });
     }
+    // 4.监听下拉事件
+    if (this.pullDownRefresh) {
+      this.scroll.on("pullingDown",()=>{
+        this.$emit("pullingDown");
+      })
+    }
   },
   methods: {
     scrollTo(x, y, time = 700) {
@@ -55,6 +67,9 @@ export default {
     },
     finishPullUp() {
       this.scroll.finishPullUp();
+    },
+    finishPullDown(){
+      this.scroll && this.scroll.finishPullDown();
     },
     refresh() {
       this.scroll && this.scroll.refresh();

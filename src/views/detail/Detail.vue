@@ -11,7 +11,7 @@
       <detail-comment-info ref="comment" :comment-info="commentInfo"></detail-comment-info>
       <goods-list ref="recommend" :goods="recommentInfo" />
     </scroll>
-    <detail-bottom-bar />
+    <detail-bottom-bar @addToCart="addToCart" />
     <back-top @click.native="backClick" v-show="isShowBackTop" />
   </div>
 </template>
@@ -75,8 +75,8 @@ export default {
   // 混入
   mixins: [itemListenerMixin, backTopMixin],
   methods: {
+    // 图片加载后刷新滚动高度
     imageLoad() {
-      // 图片加载后刷新滚动高度
       this.$refs.scroll.refresh();
       // 调用防抖处理后的的函数获取位置
       this.getThemeTopY();
@@ -88,9 +88,10 @@ export default {
     // 判断BackTop是否显示
     contentScroll(position) {
       // this.isShowBackTop = -position.y > 0;
-      this.listenShowBackTop(position);
+      const positionY = this.listenShowBackTop(position);
+      // 已封装进Mixin
       // 1.获取y值
-      const positionY = -position.y;
+      // const positionY = -position.y;
 
       // 2.将y值与范围值进行对比
       const length = this.themeTopYs.length;
@@ -124,10 +125,21 @@ export default {
         }
       }
     },
-    listenShowBackTop(position) {
-      this.isShowBackTop = -position.y > 0;
-    }
+    // 添加到购物车
+    addToCart() {
+      // 1.获取购物车需要展示的信息
+      const product = {};
+      product.image = this.topImages[0];
+      product.title = this.goods.title;
+      product.desc = this.goods.desc;
+      product.price = this.goods.realPrice;
+      product.iid = this.iid;
 
+      // 2.将商品添加到购物车
+      // this.$store.commit('addCart',product)
+      // 使用actions
+      this.$store.dispatch('addCart',product)
+    }
   },
   created() {
     // 1.保存传入的id
